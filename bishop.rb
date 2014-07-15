@@ -7,9 +7,11 @@ class Bishop < SlidingPiece
     [-1,-1],
     [-1, 1]
   ]
+  
   def move_dirs
     DELTAS
   end
+  
   def symbol
     @color == :black ? "♝" : "♗"
   end

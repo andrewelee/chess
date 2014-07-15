@@ -13,6 +13,7 @@ class SteppingPiece < Piece
         arr << tmp.dup
       end
     end
+    
     arr
   end
 end

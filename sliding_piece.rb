@@ -13,8 +13,10 @@ class SlidingPiece < Piece
         tmp[0] += delta[0]
         tmp[1] += delta[1]
       end
-      arr << tmp.dup if @board[tmp] && @board[tmp].color != @color
+      
+      arr << tmp.dup if @board[tmp] && (@board[tmp].color != @color)
     end
+    
     arr
   end
 end

@@ -11,9 +11,11 @@ class Queen < SlidingPiece
     [ 0,-1],
     [ 0, 1]
   ]
+  
   def move_dirs
     DELTAS
   end
+  
   def symbol
     @color == :black ? "♛" : "♕"
   end

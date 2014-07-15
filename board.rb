@@ -33,6 +33,7 @@ class Board
   def in_check?(color)
     king_pos = @grid.flatten.select { |piece|
       piece.is_a?(King) && piece.color == color }[0].position
+
     @grid.flatten.each do |piece|
       if piece && piece.color != color
         return true if piece.moves.include?(king_pos)
@@ -42,8 +43,9 @@ class Board
   end
 
   def checkmate?(color)
-    king_pos = @grid.flatten.select { |piece|
-      piece.is_a?(King) && piece.color == color }[0].position
+    king_pos = @grid.flatten.find { |piece|
+      piece.is_a?(King) && piece.color == color }.position
+
     @grid.flatten.each do |piece|
       if piece && piece.color == color
         return false if !piece.valid_moves.empty?
@@ -53,18 +55,16 @@ class Board
   end
 
   def [](pos)
-    return nil if pos.any? { |n| n < 0 || n > 7 }
-    @grid[pos[0]][pos[1]]
+    @grid[pos[0]][pos[1]] if pos.all? { |n| n.between?(0, 7) }
   end
 
   def []=(pos, val)
-    @grid[pos[0]][pos[1]] = val if !pos.any? { |n| n < 0 || n > 7 }
+    @grid[pos[0]][pos[1]] = val if pos.all? { |n| n.between?(0, 7) }
   end
 
   def move(start, end_pos)
     raise "No piece found at #{start}" if self[start].nil?
     raise "Invalid movement" if !self[start].moves.include?(end_pos)
-    old_val = self[end_pos]
     self[end_pos] = self[start]
     self[end_pos].position = end_pos
     self[start] = nil
