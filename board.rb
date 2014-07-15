@@ -21,25 +21,24 @@ class Board
   def initialize
     @grid = Array.new(8) { Array.new(8) }
 
-    i = 0
-    while i < 8
+    8.times do |i|
       self[[0, i]] = TYPES[i].new([0, i], :black, self)
       self[[1, i]] = Pawn.new([1, i], :black, self)
       self[[7, i]] = TYPES[i].new([7, i], :white, self)
       self[[6, i]] = Pawn.new([6, i], :white, self)
-      i += 1
     end
   end
 
   def in_check?(color)
-    king_pos = @grid.flatten.select { |piece|
-      piece.is_a?(King) && piece.color == color }[0].position
+    king_pos = @grid.flatten.find { |piece|
+      piece.is_a?(King) && piece.color == color }.position
 
-    @grid.flatten.each do |piece|
-      if piece && piece.color != color
+    @grid.flatten.compact.each do |piece|
+      if piece.color != color
         return true if piece.moves.include?(king_pos)
       end
     end
+
     false
   end
 
@@ -47,11 +46,12 @@ class Board
     king_pos = @grid.flatten.find { |piece|
       piece.is_a?(King) && piece.color == color }.position
 
-    @grid.flatten.each do |piece|
-      if piece && piece.color == color
+    @grid.flatten.compact.each do |piece|
+      if piece.color == color
         return false if !piece.valid_moves.empty?
       end
     end
+
     true
   end
 
