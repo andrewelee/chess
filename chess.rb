@@ -1,60 +1,9 @@
-class Board
-  TYPES = [
-    Rook,
-    Knight,
-    Bishop,
-    Queen,
-    King,
-    Bishop,
-    Knight,
-    Rook
-  ]
-  def initialize
-    @grid = Array.new(8) { Array.new(8) }
-
-    i = 0
-    while i < 8
-      self[0, i] = TYPES[i].new([0, i], :black, self)
-      self[1, i] = Pawn.new([1, i], :black, self)
-      self[7, i] = TYPES[i].new([7, i], :white, self)
-      self[6, i] = Pawn.new([6, i], :white, self)
-    end
-  end
-  def in_check?(color)
-    king_pos = @grid.flatten.select { |piece|
-      piece.is_a?(King) && piece.color == color }[0].position
-
-    @grid.flatten.each do |piece|
-      if piece && piece.color != color
-        return true if piece.moves.include?(king_pos)
-      end
-    end
-  end
-  def [](pos)
-    return nil if position.any? { |n| n < 0 || n > 7 }
-    @grid[position[1]][position[0]]
-  end
-  def []=(pos, val)
-    @grid[position[1]][position[0]] = val
-  end
-  def move(start, end_pos)
-    raise "No piece found at #{start}" if self[start].nil?
-    raise "Invalid movement" if !self[start].moves.include?(end_pos)
-    self[end_pos] = self[start]
-    self[end_pos].position = end_pos
-    self[start] = nil
-  end
-  def display
-    @grid.each do |row|
-      row.each do |piece|
-        p piece ? piece.symbol + ' ' : '_ '
-    end
-  end
-end
-
 class Piece
   attr_accessor :position, :color, :board
   def initialize(position, color, board)
+    @position = position
+    @color = color
+    @board = board
   end
 
   def moves
@@ -124,11 +73,11 @@ class Pawn < Piece
   end
 
   def symbol
-    color == :black ? "U+265F" : "U+2659"
+    color == :black ? "♟" : "♙"
   end
 end
 
-def Bishop < SlidingPiece
+class Bishop < SlidingPiece
   DELTAS = [
     [ 1, 1],
     [ 1,-1],
@@ -139,11 +88,11 @@ def Bishop < SlidingPiece
     DELTAS
   end
   def symbol
-    @color == :black ? "U+265D" : "U+2657"
+    @color == :black ? "♝" : "♗"
   end
 end
 
-def Rook < SlidingPiece
+class Rook < SlidingPiece
   DELTAS = [
     [ 1, 0],
     [-1, 0],
@@ -154,11 +103,11 @@ def Rook < SlidingPiece
     DELTAS
   end
   def symbol
-    @color == :black ? "U+265C" : "U+2656"
+    @color == :black ? "♜" : "♖"
   end
 end
 
-def Queen < SlidingPiece
+class Queen < SlidingPiece
   DELTAS = [
     [ 1, 1],
     [ 1,-1],
@@ -173,11 +122,11 @@ def Queen < SlidingPiece
     DELTAS
   end
   def symbol
-    @color == :black ? "U+265B" : "U+2655"
+    @color == :black ? "♛" : "♕"
   end
 end
 
-def Knight < SteppingPiece
+class Knight < SteppingPiece
   DELTAS = [
     [ 2, 1],
     [ 2,-1],
@@ -193,11 +142,11 @@ def Knight < SteppingPiece
     DELTAS
   end
   def symbol
-    color == :black ? "U+265E" : "U+2658"
+    @color == :black ? "♞" : "♘"
   end
 end
 
-def King < SteppingPiece
+class King < SteppingPiece
   DELTAS = [
     [ 1, 1],
     [ 1,-1],
@@ -214,6 +163,66 @@ def King < SteppingPiece
   end
 
   def symbol
-    @color == :black ? "U+265A"" : "U+2654""
+    @color == :black ? '♚' : "♔"
   end
 end
+
+class Board
+  TYPES = [
+    Rook,
+    Knight,
+    Bishop,
+    Queen,
+    King,
+    Bishop,
+    Knight,
+    Rook
+  ]
+  def initialize
+    @grid = Array.new(8) { Array.new(8) }
+
+    i = 0
+    while i < 8
+      self[[0, i]] = TYPES[i].new([0, i], :black, self)
+      self[[1, i]] = Pawn.new([1, i], :black, self)
+      self[[7, i]] = TYPES[i].new([7, i], :white, self)
+      self[[6, i]] = Pawn.new([6, i], :white, self)
+      i += 1
+    end
+  end
+  def in_check?(color)
+    king_pos = @grid.flatten.select { |piece|
+      piece.is_a?(King) && piece.color == color }[0].position
+
+    @grid.flatten.each do |piece|
+      if piece && piece.color != color
+        return true if piece.moves.include?(king_pos)
+      end
+    end
+  end
+  def [](pos)
+    return nil if pos.any? { |n| n < 0 || n > 7 }
+    @grid[pos[0]][pos[1]]
+  end
+  def []=(pos, val)
+    @grid[pos[0]][pos[1]] = val
+  end
+  def move(start, end_pos)
+    raise "No piece found at #{start}" if self[start].nil?
+    raise "Invalid movement" if !self[start].moves.include?(end_pos)
+    self[end_pos] = self[start]
+    self[end_pos].position = end_pos
+    self[start] = nil
+  end
+  def display
+    @grid.each do |row|
+      row.each do |piece|
+        print piece ? piece.symbol + ' ' : '_ '
+      end
+      puts
+    end
+  end
+end
+
+b = Board.new
+b.display
