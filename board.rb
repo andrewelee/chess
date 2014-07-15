@@ -4,6 +4,7 @@ require_relative 'bishop'
 require_relative 'pawn'
 require_relative 'queen'
 require_relative 'king'
+require 'colorize'
 
 class Board
   TYPES = [
@@ -73,9 +74,10 @@ class Board
 
   def display
     i = -1
-    puts "+ 0 1 2 3 4 5 6 7"
+
+    puts "+ 0 1 2 3 4 5 6 7".light_white.on_black
     @grid.each do |row|
-      print "#{i += 1} "
+      print "#{i += 1}".light_white.on_black + " "
       row.each do |piece|
         print piece ? piece.symbol + ' ' : '_ '
       end

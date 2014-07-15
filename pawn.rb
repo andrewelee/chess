@@ -2,7 +2,7 @@ require_relative 'piece'
 
 class Pawn < Piece
   attr_accessor :has_moved
-  
+
   def initialize(position, color, board)
     @has_moved = false
     @direction = color == :black ? 1 : -1
