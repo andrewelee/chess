@@ -17,12 +17,14 @@ class Game
 
       begin
         piece_pos = @players[color].get_piece_pos(color).reverse
+        raise "No piece selected." if @board[piece_pos].nil?
+
         raise "Cannot select opponent's piece" if
           @board[piece_pos] &&
           @board[piece_pos].color != color
 
-        str = @board[piece_pos].class
-        puts "#{str}"
+        puts "Selected: #{@board[piece_pos].class}"
+        @board.display(piece_pos)
         move = @players[color].get_move(color).reverse
         old_board = @board.dup
         @board.move(piece_pos, move)
@@ -32,10 +34,17 @@ class Game
           raise "Move would result in a check"
         elsif @board[move].is_a?(Pawn)
           @board[move].has_moved = true
+
+          if @board[move].position[0] == 0 || @board[move].position[0] == 7
+            color = @board[move].color
+            promotion = @board[move].promote
+            @board[move] = promotion.new(move, color, @board)
+          end
         end
+
       rescue StandardError => error
         puts error.message
-        puts error.backtrace
+        #puts error.backtrace
         retry
       end
 
@@ -48,6 +57,8 @@ class Game
     color = color == :white ? :black : :white
     puts "Checkmate! Winner: #{color} in #{turns/2} moves"
   end
+
+
 end
 
 g = Game.new(HumanPlayer.new, HumanPlayer.new)

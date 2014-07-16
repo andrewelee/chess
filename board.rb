@@ -18,8 +18,21 @@ class Board
     Rook
   ]
 
+  NOTATION = {
+    1 => 7,
+    2 => 6,
+    3 => 5,
+    4 => 4,
+    5 => 3,
+    6 => 2,
+    7 => 1,
+    8 => 0
+  }
+
   def initialize
     @grid = Array.new(8) { Array.new(8) }
+    @captures = []
+    @selected = nil
 
     8.times do |i|
       self[[0, i]] = TYPES[i].new([0, i], :black, self)
@@ -64,25 +77,41 @@ class Board
   end
 
   def move(start, end_pos)
-    raise "No piece found at #{start}" if self[start].nil?
     raise "Invalid movement" if !self[start].moves.include?(end_pos)
+    @captures << self[end_pos] if self[end_pos]
     self[end_pos] = self[start]
     self[end_pos].position = end_pos
     self[start] = nil
     self
   end
 
-  def display
-    i = -1
+  def coordinates(pos)
+    coordinates = pos.reverse
+    coordinates[0] = (coordinates[0] + 97).chr.upcase
+    coordinates[1] = NOTATION[coordinates[1]]
+    coordinates = coordinates.join
+  end
 
-    puts "+ 0 1 2 3 4 5 6 7".light_white.on_black
+  def display(selected = nil)
+    i = 9
+    puts "+ A B C D E F G H ".light_white.on_black
     @grid.each do |row|
-      print "#{i += 1}".light_white.on_black + " "
+      print "#{i -= 1}".light_white.on_black + " "
       row.each do |piece|
-        print piece ? piece.symbol + ' ' : '_ '
+        if piece
+          if (selected && selected == piece.position)
+            print piece.symbol.colorize(:red) + ' '
+          else
+            print piece.symbol + ' '
+          end
+        else
+          print '_ '
+        end
       end
       puts
     end
+    @captures.each { |piece| print piece.symbol }
+    puts
   end
 
   def dup

@@ -22,6 +22,20 @@ class Pawn < Piece
     arr
   end
 
+  def promote
+    promotions =
+    {
+      "rook" => Rook,
+      "knight" => Knight,
+      "bishop" => Bishop,
+      "queen" => Queen
+    }
+
+    puts "Pawn has advanced and can now be promoted! Select a piece: "
+    promotion = promotions[gets.chomp.downcase]
+
+  end
+
   def symbol
     color == :black ? "♟" : "♙"
   end
